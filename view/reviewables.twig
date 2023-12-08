@@ -1,0 +1,10 @@
+{% extends 'layout.twig' %}
+{% block body %}
+	Reviewables
+	{% if reviewables is empty %}
+		No reviewables yet
+	{% else %}
+		Table of reviewables
+	{% endif %}
+	<a href="{{ url_for('reviewables.new') }}">New</a>
+{% endblock %}

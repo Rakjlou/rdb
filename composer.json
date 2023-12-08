@@ -1,0 +1,30 @@
+{
+    "name": "rak/rdb",
+    "description": "Site for reviews",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Rdb\\": "src/",
+            "Rdb\\Db\\": "src/db/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Noe Sierra Velasquez",
+            "email": "nosierravelasquez@gmail.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "^4.12",
+        "slim/psr7": "^1.6",
+        "slim/twig-view": "^3.3",
+        "php-di/php-di": "^7.0",
+        "slim/flash": "^0.4.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php scripts/install-db.php"
+        ]
+    }
+}

@@ -1,0 +1,18 @@
+<p>
+	<label x-init="$el.setAttribute('for', 'fieldName-' + fieldId)">Field name:</label>
+	<input
+		required
+		type="text"
+		name="fieldName[]"
+		x-init="$el.setAttribute('id', 'fieldName-' + fieldId++)"
+	>
+	<label x-init="$el.setAttribute('for', 'fieldType-' + fieldId)">Field type:</label>
+	<select
+		required
+		x-init="$el.setAttribute('id', 'fieldType-' + fieldId++)"
+	>
+		<option value="text">Text</option>
+		<option value="number">Number</option>
+	</select>
+	<button x-on:click="$el.closest('p').remove();">Delete</button>
+</p>
