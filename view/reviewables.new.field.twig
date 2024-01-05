@@ -3,16 +3,22 @@
 	<input
 		required
 		type="text"
-		name="fieldName[]"
+		{% if field %} name="fieldNameUpdate[{{ field.id }}]" {% else %} name="fieldName[]" {% endif %}
+		value="{{ field.name }}"
 		x-init="$el.setAttribute('id', 'fieldName-' + fieldId++)"
 	>
 	<label x-init="$el.setAttribute('for', 'fieldType-' + fieldId)">Field type:</label>
 	<select
 		required
+		{% if field %} name="fieldTypeUpdate[{{ field.id }}]" {% else %} name="fieldType[]" {% endif %}
 		x-init="$el.setAttribute('id', 'fieldType-' + fieldId++)"
 	>
-		<option value="text">Text</option>
-		<option value="number">Number</option>
+		{% for type in callstatic('\\Rdb\\Reviewable\\DefinitionFieldType', 'cases') %}
+			<option
+				value="{{ type.value }}"
+				{% if field.type == type %} selected {% endif %}
+			>{{ type.value | capitalize }}</option>
+		{% endfor %}
 	</select>
 	<button x-on:click="$el.closest('p').remove();">Delete</button>
 </p>

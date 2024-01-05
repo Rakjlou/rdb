@@ -6,7 +6,9 @@
     "autoload": {
         "psr-4": {
             "Rdb\\": "src/",
-            "Rdb\\Db\\": "src/db/"
+            "Rdb\\Db\\": "src/Db/",
+            "Rdb\\Reviewable\\": "src/Reviewable/",
+            "Rdb\\Reviewable\\Repository\\": "src/Reviewable/Repository/"
         }
     },
     "authors": [

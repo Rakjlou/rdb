@@ -1,31 +1,46 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}ReviewsDB{% endblock %}</title>
-    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    {% block head %}{% endblock %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{% block title %}ReviewsDB{% endblock %}</title>
+
+    {# <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"> #}
+
+	<script src="https://unpkg.com/htmx.org@1.9.9"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+	{% block head %}{% endblock %}
 </head>
 <body hx-boost="true">
-    {% block navbar %}
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('reviewables') }}">Reviewable</a></li>
-        </ul>
-    </nav>
-    {% endblock %}
-    {% block flashes %}
-        {% if flash is not empty %}
-            {% for level, messages in flash %}
-                {% for message in messages %}
-                    <p>{{ level }}: {{ message }}</p>
-                {% endfor %}
-            {% endfor %}
-        {% endif %}
-    {% endblock %}
-    {% block body %}{% endblock %}
+	{% block navbar %}
+	<nav>
+	<ul>
+	<li><a href="{{ url_for('home') }}">Home</a></li>
+	<li><a href="{{ url_for('reviewables') }}">Reviewable</a></li>
+		</ul>
+	</nav>
+	{% endblock %}
+	{% block flashes %}
+		{% set flashMessages = flash.getMessages() %}
+		{% if flashMessages is not empty %}
+			{% for level, messages in flashMessages %}
+				{% for message in messages %}
+					<p>{{ level }}: {{ message }}</p>
+				{% endfor %}
+			{% endfor %}
+		{% endif %}
+	{% endblock %}
+	{% block body %}{% endblock %}
+	<script type="text/javascript">
+		document.body.addEventListener('htmx:beforeSwap', (evt) => {
+			if([400, 422, 409].includes(evt.detail.xhr.status)) {
+				evt.detail.shouldSwap = true;
+				evt.detail.isError = false;
+			}
+		});
+	</script>
 </body>
 </html>

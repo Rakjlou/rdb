@@ -23,6 +23,7 @@ class SQLiteDatabase implements DatabaseInterface
 		try {
 			$this->db = new PDO('sqlite:' . $file);
 			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->db->exec('PRAGMA foreign_keys = ON;');
 		} catch (PDOException $e) {
 			throw new PDOException('Error connecting to SQLite database: ' . $e->getMessage());
 		}
@@ -37,9 +38,16 @@ class SQLiteDatabase implements DatabaseInterface
 	{
 		$stmt = $this->db->prepare($query);
 
-		if (!empty($params)) {
-			foreach ($params as $key => $value) {
-				$stmt->bindParam($key, $value);
+		if (!empty($params))
+		{
+			foreach ($params as $key => $value)
+			{
+				$type = $this->getPdoTypeFromVariable($value);
+
+				if ($type === null)
+					$stmt->bindParam($key, $value);
+				else
+					$stmt->bindParam($key, $value, $type);
 			}
 		}
 
@@ -63,5 +71,15 @@ class SQLiteDatabase implements DatabaseInterface
 	public function getPdo(): PDO
 	{
 		return $this->db;
+	}
+
+	protected function getPdoTypeFromVariable($var)
+	{
+		switch (gettype($var))
+		{
+			case 'integer': PDO::PARAM_INT;
+			case 'string': PDO::PARAM_STR;
+			default: return null;
+		}
 	}
 }

@@ -1,10 +1,36 @@
 {% extends 'layout.twig' %}
 {% block body %}
 	Reviewables
+
 	{% if reviewables is empty %}
 		No reviewables yet
 	{% else %}
-		Table of reviewables
+		<table>
+			<thead>
+				<th>#</th>
+				<th>Name</th>
+				<th>Actions</th>
+			</thead>
+			<tbody>
+				{% for reviewable in reviewables %}
+					<tr>
+						<td>{{ reviewable.id }}</td>
+						<td>{{ reviewable.name }}</td>
+						<td>
+							{# <a href="{{ url_for('reviewables.edit', { 'id': reviewable.id }) }}">Edit</a> #}
+							<button hx-get="{{ url_for('reviewables.edit', { 'id': reviewable.id }) }}"
+									hx-push-url="true"
+									hx-target="body">
+								Edit</button>
+							<button hx-delete="{{ url_for('reviewables.delete', { 'id': reviewable.id }) }}"
+									hx-target="body"
+									hx-confirm="Are you sure you want to delete {{ reviewable.name }} ?">
+								Delete</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	{% endif %}
 	<a href="{{ url_for('reviewables.new') }}">New</a>
 {% endblock %}
