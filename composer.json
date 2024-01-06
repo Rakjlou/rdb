@@ -6,6 +6,7 @@
     "autoload": {
         "psr-4": {
             "Rdb\\": "src/",
+            "Rdb\\Controller\\": "src/Controller/",
             "Rdb\\Db\\": "src/Db/",
             "Rdb\\Reviewable\\": "src/Reviewable/",
             "Rdb\\Reviewable\\Repository\\": "src/Reviewable/Repository/"
