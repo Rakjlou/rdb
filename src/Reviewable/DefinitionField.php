@@ -3,12 +3,6 @@ namespace Rdb\Reviewable;
 
 class DefinitionField
 {
-	/*
-			INSERT OR IGNORE INTO ReviewableFieldDef (def_id, type, name) VALUES
-  (:defId, 'text', 'imdb'),
-  (:defId, 'text', 'director'),
-  (:defId, 'integer', 'seen')
-	*/
 	public function __construct(
 		protected ?Definition $def = null,
 		protected ?int $id = null,

@@ -90,7 +90,7 @@ class Definition
 			array_map(fn($elem) => $elem->id(), $fields)
 		));
 
-		
+
 		$placeholders = implode(',', array_fill(0, count($fieldIdsToDelete), '?'));
 		$stmt = $pdo->prepare("DELETE FROM `$table` WHERE `id` IN ($placeholders)");
 		$stmt->execute($fieldIdsToDelete);

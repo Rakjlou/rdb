@@ -13,18 +13,18 @@ use Slim\Flash\Messages as FlashMessages;
 
 abstract class AbstractController
 {
-    protected App $app;
-    protected ContainerInterface $container;
-    protected Twig $view;
-    protected FlashMessages $flash;
-    protected Container $repository;
+	protected App $app;
+	protected ContainerInterface $container;
+	protected Twig $view;
+	protected FlashMessages $flash;
+	protected Container $repository;
 
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-        $this->app = $container->get('app');
-        $this->view = $container->get('view');
-        $this->flash = $container->get('flash');
-        $this->repository = $container->get('repository');
-    }
+	public function __construct(ContainerInterface $container)
+	{
+		$this->container = $container;
+		$this->app = $container->get('app');
+		$this->view = $container->get('view');
+		$this->flash = $container->get('flash');
+		$this->repository = $container->get('repository');
+	}
 }

@@ -1,9 +1,9 @@
 {% extends 'layout.twig' %}
 {% block body %}
-    {% set formUrl = reviewable ? url_for('reviewables.edit', { 'id': reviewable.id }) : url_for('reviewables.new') %}
-    {% set pageHeading = reviewable ? 'Edit ' ~ reviewable.name : 'Create Reviewable' %}
+	{% set formUrl = reviewable ? url_for('reviewables.edit', { 'id': reviewable.id }) : url_for('reviewables.new') %}
+	{% set pageHeading = reviewable ? 'Edit ' ~ reviewable.name : 'Create Reviewable' %}
 
-    {{ pageHeading }}
+	{{ pageHeading }}
 	<form action="{{ formUrl }} " method="post">
 		<fieldset>
 			<legend>Global Info</legend>
@@ -22,13 +22,13 @@
 		</fieldset>
 
 		<button type="submit">Submit</button>
-        {% if reviewable %}
-            <button hx-delete="{{ url_for('reviewables.delete', { 'id': reviewable.id }) }}"
-                    hx-target="body"
-                    hx-push-url="true"
-                    hx-confirm="Are you sure you want to delete {{ reviewable.name }} ?">
-                Delete</button>
-        {% endif %}
+		{% if reviewable %}
+			<button hx-delete="{{ url_for('reviewables.delete', { 'id': reviewable.id }) }}"
+					hx-target="body"
+					hx-push-url="true"
+					hx-confirm="Are you sure you want to delete {{ reviewable.name }} ?">
+				Delete</button>
+		{% endif %}
 	</form>
 
 {% endblock %}
