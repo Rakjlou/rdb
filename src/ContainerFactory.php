@@ -4,7 +4,9 @@ namespace Rdb;
 use DI\Container;
 use Slim\Views\Twig;
 use Slim\Flash\Messages;
+
 use Rdb\Db\SQLiteDatabase;
+use Rdb\Repository\DefinitionRepository;
 
 class ContainerFactory
 {
@@ -43,7 +45,7 @@ class ContainerFactory
 
 				$repositoryContainer->set(
 					'reviewableDefinition',
-					fn () => new \Rdb\Reviewable\Repository\Definition($container->get('db'))
+					fn () => new DefinitionRepository($container->get('db'))
 				);
 
 				return $repositoryContainer;

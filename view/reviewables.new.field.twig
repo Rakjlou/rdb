@@ -13,7 +13,7 @@
 		{% if field %} name="fieldTypeUpdate[{{ field.id }}]" {% else %} name="fieldType[]" {% endif %}
 		x-init="$el.setAttribute('id', 'fieldType-' + fieldId++)"
 	>
-		{% for type in callstatic('\\Rdb\\Reviewable\\DefinitionFieldType', 'cases') %}
+		{% for type in callstatic('\\Rdb\\Definition\\FieldType', 'cases') %}
 			<option
 				value="{{ type.value }}"
 				{% if field.type == type %} selected {% endif %}

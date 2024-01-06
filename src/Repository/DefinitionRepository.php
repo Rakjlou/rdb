@@ -1,13 +1,13 @@
 <?php
-namespace Rdb\Reviewable\Repository;
+namespace Rdb\Repository;
 
 use Rdb\Db\DatabaseInterface;
-use Rdb\Reviewable\Definition as ReviewableDefinition;
-use Rdb\Reviewable\DefinitionField as ReviewableDefinitionField;
-use Rdb\Reviewable\DefinitionFieldType as ReviewableDefinitionFieldType;
+use Rdb\Definition\Definition;
+use Rdb\Definition\Field;
+use Rdb\Definition\FieldType;
 use \PDO;
 
-class Definition
+class DefinitionRepository
 {
 	const DEFINITION_TABLE = 'ReviewableDef';
 	const FIELD_DEFINITION_TABLE = 'ReviewableFieldDef';
@@ -16,7 +16,7 @@ class Definition
 		protected DatabaseInterface $db
 	) {}
 
-	public function save(ReviewableDefinition $definition): ReviewableDefinition
+	public function save(Definition $definition): Definition
 	{
 		if ($definition->id() !== null || $definition->name() === null)
 			throw new \Exception(self::class . '::save Attempting to use save() on invalid entity');
@@ -47,7 +47,7 @@ class Definition
 		return $definition;
 	}
 
-	public function update(ReviewableDefinition $definition): ReviewableDefinition
+	public function update(Definition $definition): Definition
 	{
 		if ($definition->id() === null || $definition->name() === null)
 			throw new \Exception(self::class . '::update Attempting to use update() on invalid entity');
@@ -98,9 +98,9 @@ class Definition
 	}
 
 
-	public function delete(ReviewableDefinition|int $definition): void
+	public function delete(Definition|int $definition): void
 	{
-		if ($definition instanceof ReviewableDefinition)
+		if ($definition instanceof Definition)
 			$id = $definition->id();
 		else if (is_int($definition) && $definition > 0)
 			$id = $definition;
@@ -122,11 +122,11 @@ class Definition
 		$stmt->execute();
 
 		while ($row = $stmt->fetch())
-			$result[] = $this->hydrateFields(new ReviewableDefinition(id: $row['id'], name: $row['name']));
+			$result[] = $this->hydrateFields(new Definition(id: $row['id'], name: $row['name']));
 		return $result;
 	}
 
-	public function findById(int $id): ?ReviewableDefinition
+	public function findById(int $id): ?Definition
 	{
 		$pdo = $this->db->getPdo();
 		$table = self::DEFINITION_TABLE;
@@ -135,12 +135,12 @@ class Definition
 		$stmt->execute();
 
 		if ($row = $stmt->fetch())
-			return $this->hydrateFields(new ReviewableDefinition(id: $row['id'], name: $row['name']));
+			return $this->hydrateFields(new Definition(id: $row['id'], name: $row['name']));
 
 		return null;
 	}
 
-	public function hydrateFields(ReviewableDefinition $definition): ReviewableDefinition
+	public function hydrateFields(Definition $definition): Definition
 	{
 		if ($definition->id() === null)
 			throw new \Exception(self::class . '::hydrateFields Attempting to hydrate fields on invalid entity');
@@ -152,11 +152,11 @@ class Definition
 
 		while ($row = $stmt->fetch())
 		{
-			$definition->addField(new ReviewableDefinitionField(
+			$definition->addField(new Field(
 				def: $definition,
 				id: $row['id'],
 				name: $row['name'],
-				type: ReviewableDefinitionFieldType::from($row['type'])
+				type: FieldType::from($row['type'])
 			));
 		}
 

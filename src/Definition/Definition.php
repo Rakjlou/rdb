@@ -1,5 +1,5 @@
 <?php
-namespace Rdb\Reviewable;
+namespace Rdb\Definition;
 
 class Definition
 {
@@ -37,16 +37,16 @@ class Definition
 		return $this;
 	}
 
-	public function addField(DefinitionField $field): Definition
+	public function addField(Field $field): Definition
 	{
 		$field->def($this);
 		$this->fields[] = $field;
 		return $this;
 	}
 
-	public function removeField(DefinitionField|int $field)
+	public function removeField(Field|int $field)
 	{
-		if ($field instanceof DefinitionField && $field->name() !== null)
+		if ($field instanceof Field && $field->name() !== null)
 			$this->fields(array_filter($this->fields, fn($elem) => $elem->name() !== $field->name()));
 		else if ($field instanceof int)
 			$this->fields(array_filter($this->fields, fn($elem) => $elem->id() !== $field));

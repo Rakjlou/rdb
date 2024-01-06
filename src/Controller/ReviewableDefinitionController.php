@@ -4,9 +4,9 @@ namespace Rdb\Controller;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use Rdb\Reviewable\Definition as ReviewableDefinition;
-use Rdb\Reviewable\DefinitionField as ReviewableDefinitionField;
-use Rdb\Reviewable\DefinitionFieldType as ReviewableDefinitionFieldType;
+use Rdb\Definition\Definition as ReviewableDefinition;
+use Rdb\Definition\Field as ReviewableDefinitionField;
+use Rdb\Definition\FieldType as ReviewableDefinitionFieldType;
 
 class ReviewableDefinitionController extends AbstractController
 {

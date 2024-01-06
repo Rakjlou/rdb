@@ -1,7 +1,7 @@
 <?php
-namespace Rdb\Reviewable;
+namespace Rdb\Definition;
 
-enum DefinitionFieldType: string
+enum FieldType: string
 {
 	case TEXT = 'text';
 	case INTEGER = 'integer';
