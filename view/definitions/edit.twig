@@ -13,10 +13,10 @@
 
 		<fieldset>
 			<legend>Fields</legend>
-			<button hx-get="/definitions/new/field" hx-swap="beforeend" hx-target="#fields">Add field</button>
+			<button hx-get="{{ url_for('definitions.field.new') }}" hx-swap="beforeend" hx-target="#fields">Add field</button>
 			<div id="fields" x-data="{ fieldId: 0 }">
 				{% for field in definition.fields %}
-					{% include 'definitions.new.field.twig' with {field: field} %}
+					{% include 'definitions/new.field.twig' with {field: field} %}
 				{% endfor %}
 			</div>
 		</fieldset>

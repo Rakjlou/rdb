@@ -17,7 +17,6 @@
 						<td>{{ definition.id }}</td>
 						<td>{{ definition.name }}</td>
 						<td>
-							{# <a href="{{ url_for('definitions.edit', { 'id': definition.id }) }}">Edit</a> #}
 							<button hx-get="{{ url_for('definitions.edit', { 'id': definition.id }) }}"
 									hx-push-url="true"
 									hx-target="body">
