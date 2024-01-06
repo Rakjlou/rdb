@@ -4,35 +4,35 @@ namespace Rdb\Controller;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use Rdb\Definition\Definition as ReviewableDefinition;
-use Rdb\Definition\Field as ReviewableDefinitionField;
-use Rdb\Definition\FieldType as ReviewableDefinitionFieldType;
+use Rdb\Definition\Definition as Definition;
+use Rdb\Definition\Field as DefinitionField;
+use Rdb\Definition\FieldType as DefinitionFieldType;
 
-class ReviewableDefinitionController extends AbstractController
+class DefinitionController extends AbstractController
 {
 	static public function routes($app)
 	{
 		// Create
-		$app->get('/reviewables/new', [self::class, 'create'])->setName('reviewables.new');
-		$app->post('/reviewables/new', [self::class, 'createPost'])->setName('reviewables.new.post');
+		$app->get('/definitions/new', [self::class, 'create'])->setName('definitions.new');
+		$app->post('/definitions/new', [self::class, 'createPost'])->setName('definitions.new.post');
 
 		// Read
-		$app->get('/reviewables', [self::class, 'read'])->setName('reviewables');
+		$app->get('/definitions', [self::class, 'read'])->setName('definitions');
 
 		// Update
-		$app->get('/reviewables/{id}/edit', [self::class, 'update'])->setName('reviewables.edit');
-		$app->post('/reviewables/{id}/edit', [self::class, 'updatePost'])->setName('reviewables.edit.post');
+		$app->get('/definitions/{id}/edit', [self::class, 'update'])->setName('definitions.edit');
+		$app->post('/definitions/{id}/edit', [self::class, 'updatePost'])->setName('definitions.edit.post');
 
 		// Delete
-		$app->delete('/reviewables/{id}', [self::class, 'delete'])->setName('reviewables.delete');
+		$app->delete('/definitions/{id}', [self::class, 'delete'])->setName('definitions.delete');
 
 		// HTMX-only
-		$app->get('/reviewables/new/field', [self::class, 'xGetField'])->setName('reviewables.field.new');
+		$app->get('/definitions/new/field', [self::class, 'xGetField'])->setName('definitions.field.new');
 	}
 
 	public function create(Request $request, Response $response, array $args)
 	{
-		return $this->view->render($response, 'reviewables.edit.twig');
+		return $this->view->render($response, 'definitions.edit.twig');
 	}
 
 	public function createPost(Request $request, Response $response, array $args)
@@ -44,28 +44,28 @@ class ReviewableDefinitionController extends AbstractController
 	{
 		return $this->view->render(
 			$response,
-			'reviewables.twig',
+			'definitions.twig',
 			[
-				'reviewables' => $this->repository->get('reviewableDefinition')->findAll(),
+				'definitions' => $this->repository->get('definition')->findAll(),
 			]
 		);
 	}
 
 	public function update(Request $request, Response $response, array $args)
 	{
-		$reviewable = $this->repository->get('reviewableDefinition')->findById(intval($args['id']));
+		$definition = $this->repository->get('definition')->findById(intval($args['id']));
 
-		if (!$reviewable) {
-			$this->flash->addMessage('error', 'Reviewable not found!');
+		if (!$definition) {
+			$this->flash->addMessage('error', 'Definition not found!');
 			return $response->withStatus(404)->withHeader(
 				'Location',
-				$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
+				$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
 			);
 		}
 
-		return $this->view->render($response, 'reviewables.edit.twig',
+		return $this->view->render($response, 'definitions.edit.twig',
 			[
-				'reviewable' => $reviewable
+				'definition' => $definition
 			]
 		);
 	}
@@ -77,11 +77,11 @@ class ReviewableDefinitionController extends AbstractController
 
 	public function delete(Request $request, Response $response, array $args)
 	{
-		$this->repository->get('reviewableDefinition')->delete(intval($args['id']));
-		$this->flash->addMessage('info', 'Reviewable deleted!');
+		$this->repository->get('definition')->delete(intval($args['id']));
+		$this->flash->addMessage('info', 'Definition deleted!');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
+			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
 		);
 	}
 
@@ -89,7 +89,7 @@ class ReviewableDefinitionController extends AbstractController
 	{
 		if ($request->getHeaderLine('HX-Request') !== 'true')
 			return $response->withStatus(403);
-		return $this->view->render($response, 'reviewables.new.field.twig');
+		return $this->view->render($response, 'definitions.new.field.twig');
 	}
 
 	private function processCreateUpdatePost(Request $request, Response $response, array $args, bool $isUpdate = false)
@@ -105,21 +105,21 @@ class ReviewableDefinitionController extends AbstractController
 			|| count($_REQUEST['fieldTypeUpdate']) !== count($_REQUEST['fieldNameUpdate'])
 		) {
 			$this->flash->addMessageNow('error', 'Bad request');
-			return $this->view->render($response, 'reviewables.edit.twig')->withStatus(400);
+			return $this->view->render($response, 'definitions.edit.twig')->withStatus(400);
 		}
 
-		$repository = $this->repository->get('reviewableDefinition');
-		$definition = new ReviewableDefinition(id: $isUpdate ? intval($args['id']) : null);
+		$repository = $this->repository->get('definition');
+		$definition = new Definition(id: $isUpdate ? intval($args['id']) : null);
 
 		$definition->name($_REQUEST['name']);
 
 		foreach (array_keys($_REQUEST['fieldNameUpdate']) as $key)
 		{
 			$definition->addField(
-				new ReviewableDefinitionField(
+				new DefinitionField(
 					id: intval($key),
 					name: $_REQUEST['fieldNameUpdate'][$key],
-					type: ReviewableDefinitionFieldType::from($_REQUEST['fieldTypeUpdate'][$key])
+					type: DefinitionFieldType::from($_REQUEST['fieldTypeUpdate'][$key])
 				)
 			);
 		}
@@ -127,9 +127,9 @@ class ReviewableDefinitionController extends AbstractController
 		foreach (array_keys($_REQUEST['fieldName']) as $key)
 		{
 			$definition->addField(
-				new ReviewableDefinitionField(
+				new DefinitionField(
 					name: $_REQUEST['fieldName'][$key],
-					type: ReviewableDefinitionFieldType::from($_REQUEST['fieldType'][$key])
+					type: DefinitionFieldType::from($_REQUEST['fieldType'][$key])
 				)
 			);
 		}
@@ -151,9 +151,9 @@ class ReviewableDefinitionController extends AbstractController
 			$this->flash->addMessageNow('error', $e->getMessage());
 			return $this->view->render(
 				$response,
-				'reviewables.edit.twig',
+				'definitions.edit.twig',
 				[
-					'reviewable' => $definition
+					'definition' => $definition
 				]
 			)->withStatus($status);
 		}
@@ -162,7 +162,7 @@ class ReviewableDefinitionController extends AbstractController
 		$this->flash->addMessage('info', $isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
+			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
 		);
 	}
 }

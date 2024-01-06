@@ -1,0 +1,36 @@
+{% extends 'layout.twig' %}
+{% block body %}
+	Definitions
+
+	{% if definitions is empty %}
+		No definitions yet
+	{% else %}
+		<table>
+			<thead>
+				<th>#</th>
+				<th>Name</th>
+				<th>Actions</th>
+			</thead>
+			<tbody>
+				{% for definition in definitions %}
+					<tr>
+						<td>{{ definition.id }}</td>
+						<td>{{ definition.name }}</td>
+						<td>
+							{# <a href="{{ url_for('definitions.edit', { 'id': definition.id }) }}">Edit</a> #}
+							<button hx-get="{{ url_for('definitions.edit', { 'id': definition.id }) }}"
+									hx-push-url="true"
+									hx-target="body">
+								Edit</button>
+							<button hx-delete="{{ url_for('definitions.delete', { 'id': definition.id }) }}"
+									hx-target="body"
+									hx-confirm="Are you sure you want to delete {{ definition.name }} ?">
+								Delete</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+	<a href="{{ url_for('definitions.new') }}">New</a>
+{% endblock %}

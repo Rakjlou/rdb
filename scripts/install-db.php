@@ -35,12 +35,12 @@ function makeDbFile(Container $container)
 	}
 }
 
-function createReviewableDefTables($container)
+function createReviewableTables($container)
 {
 	$db = $container->get('db');
 	$sql = file_get_contents(implode(DIRECTORY_SEPARATOR, [__DIR__, 'install-db', 'create-reviewables.sql']));
 	$ret = $db->getPdo()->exec($sql);
-	logMsg("Reviewables tables created !");
+	logMsg("Reviewable tables created !");
 }
 
 $projectRootDirectory = dirname(__DIR__);
@@ -49,4 +49,4 @@ $container = ContainerFactory::get();
 
 makeDataDirectory($projectDataDirectory);
 makeDbFile($container);
-createReviewableDefTables($container);
+createReviewableTables($container);

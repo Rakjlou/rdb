@@ -44,7 +44,7 @@ class ContainerFactory
 				$repositoryContainer = new Container();
 
 				$repositoryContainer->set(
-					'reviewableDefinition',
+					'definition',
 					fn () => new DefinitionRepository($container->get('db'))
 				);
 

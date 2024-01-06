@@ -16,6 +16,6 @@ $app->getContainer()->set('app', $app);
 $app->add(TwigMiddleware::createFromContainer($app));
 
 Rdb\Controller\HomeController::routes($app);
-Rdb\Controller\ReviewableDefinitionController::routes($app);
+Rdb\Controller\DefinitionController::routes($app);
 
 $app->run();

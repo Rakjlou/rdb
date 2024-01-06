@@ -9,8 +9,8 @@ use \PDO;
 
 class DefinitionRepository
 {
-	const DEFINITION_TABLE = 'ReviewableDef';
-	const FIELD_DEFINITION_TABLE = 'ReviewableFieldDef';
+	const DEFINITION_TABLE = 'Definition';
+	const FIELD_DEFINITION_TABLE = 'DefinitionField';
 
 	public function __construct(
 		protected DatabaseInterface $db
@@ -24,12 +24,12 @@ class DefinitionRepository
 		$pdo = $this->db->getPdo();
 		$table = self::DEFINITION_TABLE;
 
-		// Saving ReviewableDef
+		// Saving Definition
 		$stmt = $pdo->prepare("INSERT INTO `$table` (`name`) VALUES (:name)");
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
 		$stmt->execute();
 
-		// Saving ReviewableFieldDef
+		// Saving DefinitionField
 		$definition->id($pdo->lastInsertId());
 		$fields = $definition->fields();
 		$table = self::FIELD_DEFINITION_TABLE;
@@ -60,7 +60,7 @@ class DefinitionRepository
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
 		$stmt->execute();
 
-		// Saving ReviewableFieldDef
+		// Saving DefinitionField
 		$fields = $definition->fields();
 		$table = self::FIELD_DEFINITION_TABLE;
 
