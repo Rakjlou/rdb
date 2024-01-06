@@ -1,24 +1,30 @@
-<p>
-	<label x-init="$el.setAttribute('for', 'fieldName-' + fieldId)">Field name:</label>
-	<input
-		required
-		type="text"
-		{% if field %} name="fieldNameUpdate[{{ field.id }}]" {% else %} name="fieldName[]" {% endif %}
-		value="{{ field.name }}"
-		x-init="$el.setAttribute('id', 'fieldName-' + fieldId++)"
-	>
-	<label x-init="$el.setAttribute('for', 'fieldType-' + fieldId)">Field type:</label>
-	<select
-		required
-		{% if field %} name="fieldTypeUpdate[{{ field.id }}]" {% else %} name="fieldType[]" {% endif %}
-		x-init="$el.setAttribute('id', 'fieldType-' + fieldId++)"
-	>
-		{% for type in callstatic('\\Rdb\\Definition\\FieldType', 'cases') %}
-			<option
-				value="{{ type.value }}"
-				{% if field.type == type %} selected {% endif %}
-			>{{ type.value | capitalize }}</option>
-		{% endfor %}
-	</select>
-	<button x-on:click="$el.closest('p').remove();">Delete</button>
-</p>
+<section class="row">
+	<div class="column">
+		<label x-init="$el.setAttribute('for', 'fieldName-' + fieldId)">Field name:</label>
+		<input
+			required
+			type="text"
+			{% if field %} name="fieldNameUpdate[{{ field.id }}]" {% else %} name="fieldName[]" {% endif %}
+			value="{{ field.name }}"
+			x-init="$el.setAttribute('id', 'fieldName-' + fieldId++)"
+		>
+	</div>
+	<div class="column">
+		<label x-init="$el.setAttribute('for', 'fieldType-' + fieldId)">Field type:</label>
+		<select
+			required
+			{% if field %} name="fieldTypeUpdate[{{ field.id }}]" {% else %} name="fieldType[]" {% endif %}
+			x-init="$el.setAttribute('id', 'fieldType-' + fieldId++)"
+		>
+			{% for type in callstatic('\\Rdb\\Definition\\FieldType', 'cases') %}
+				<option
+					value="{{ type.value }}"
+					{% if field.type == type %} selected {% endif %}
+				>{{ type.value | capitalize }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="column">
+		<button class="button-clear" x-on:click="$el.closest('section').remove();">Delete</button>
+	</div>
+</section>

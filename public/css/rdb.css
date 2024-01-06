@@ -1,0 +1,71 @@
+nav {
+	padding: 1rem 0;
+	background: #f4f5f6;
+	border-bottom: 0.1rem solid #d1d1d1;
+	margin-bottom: 1rem;
+}
+
+nav section {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+}
+
+nav section > * {
+	display: inline;
+}
+
+nav section a svg {
+	position: relative;
+	top: 0.4rem;
+	height: 2rem;
+	fill: #9b4dca;
+}
+
+.title-and-button {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+
+.title-and-button > * {
+	margin-bottom: 0;
+}
+
+legend {
+	font-size: 2rem;
+}
+
+#fields > section .column:last-child {
+	justify-content: center;
+	display: flex;
+	align-items: end;
+	padding-bottom: 0.5rem;
+}
+
+.flash {
+	border: 1px solid;
+	padding: 1rem;
+	border-radius: 1rem;
+}
+
+.flash.info {
+	border-color: #9ec5fe;
+	background-color: #cfe2ff;
+}
+
+.flash.success {
+	border-color: #a3cfbb;
+	background-color: #d1e7dd;
+}
+
+.flash.error {
+	border-color: #f8d7da;
+	background-color: #f1aeb5;
+}
+
+.flash.warning {
+	border-color: #fff3cd;
+	background-color: #ffe69c;
+}

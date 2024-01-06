@@ -78,7 +78,7 @@ class DefinitionController extends AbstractController
 	public function delete(Request $request, Response $response, array $args)
 	{
 		$this->repository->get('definition')->delete(intval($args['id']));
-		$this->flash->addMessage('info', 'Definition deleted!');
+		$this->flash->addMessage('success', 'Definition deleted!');
 		return $response->withStatus(303)->withHeader(
 			'Location',
 			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
@@ -158,7 +158,7 @@ class DefinitionController extends AbstractController
 			)->withStatus($status);
 		}
 
-		$this->flash->addMessage('info', $isUpdate ? 'Edited !' : 'Created !');
+		$this->flash->addMessage('success', $isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
 			'Location',
 			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')

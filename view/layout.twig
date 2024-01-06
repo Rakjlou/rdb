@@ -5,9 +5,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>{% block title %}ReviewsDB{% endblock %}</title>
 
-	{# <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"> #}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+	<link rel="stylesheet" href="/css/rdb.css">
 
 	<script src="https://unpkg.com/htmx.org@1.9.9"></script>
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -15,28 +17,37 @@
 	{% block head %}{% endblock %}
 </head>
 <body hx-boost="true">
-	{% block navbar %}
-		<nav>
-			<ul>
-				<li><a href="{{ url_for('home') }}">Home</a></li>
-				<li><a href="{{ url_for('definitions') }}">Definitions</a></li>
-				{% for definition in container.get('repository').get('definition').findAll() %}
-					<li><a href="#">{{ definition.name }}</a></li>
+	<nav>
+		<section class="container">
+			<a href="{{ url_for('home') }}">
+				<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M256.65 38.984l-49.697 100.702-111.13 16.146 80.413 78.385-18.982 110.68 99.396-52.256 99.397 52.256-18.983-110.68 80.413-78.384-111.127-16.146-49.7-100.702zM112 308.826l-26.674 54.05-59.646 8.665 43.16 42.073-10.188 59.403L112 444.97l53.348 28.046-10.188-59.403 43.16-42.072-59.646-8.665L112 308.825zm288 0l-26.674 54.05-59.646 8.665 43.16 42.073-10.188 59.403L400 444.97l53.348 28.046-10.188-59.403 43.16-42.072-59.646-8.665L400 308.825z"/></svg>
+				ReviewDB
+			</a>
+			{% block navbar %}
+				<span>
+					{% for definition in container.get('repository').get('definition').findAll() %}
+						<a href="#">{{ definition.name }}</a>
+					{% endfor %}
+					<a href="{{ url_for('definitions') }}">Definitions</a>
+				</span>
+			{% endblock %}
+		</section>
+	</nav>
+	<section class="container">
+		{% block flashes %}
+			{% set flashMessages = flash.getMessages() %}
+			{% if flashMessages is not empty %}
+				{% for level, messages in flashMessages %}
+					{% for message in messages %}
+						<p class="flash {{ level }}">{{ message }}</p>
+					{% endfor %}
 				{% endfor %}
-			</ul>
-		</nav>
-	{% endblock %}
-	{% block flashes %}
-		{% set flashMessages = flash.getMessages() %}
-		{% if flashMessages is not empty %}
-			{% for level, messages in flashMessages %}
-				{% for message in messages %}
-					<p>{{ level }}: {{ message }}</p>
-				{% endfor %}
-			{% endfor %}
-		{% endif %}
-	{% endblock %}
-	{% block body %}{% endblock %}
+			{% endif %}
+		{% endblock %}
+	</section>
+	<section class="container">
+		{% block body %}{% endblock %}
+	</section>
 	<script type="text/javascript">
 		document.body.addEventListener('htmx:beforeSwap', (evt) => {
 			if([400, 422, 409].includes(evt.detail.xhr.status)) {

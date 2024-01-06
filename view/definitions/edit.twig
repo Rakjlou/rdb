@@ -3,17 +3,24 @@
 	{% set formUrl = definition ? url_for('definitions.edit', { 'id': definition.id }) : url_for('definitions.new') %}
 	{% set pageHeading = definition ? 'Edit ' ~ definition.name : 'Create definition' %}
 
-	{{ pageHeading }}
+	<h2>{{ pageHeading }}</h2>
 	<form action="{{ formUrl }} " method="post">
 		<fieldset>
 			<legend>Global Info</legend>
-			<label for="name">Name:</label>
+			<label for="name">Name</label>
 			<input type="text" id="name" name="name" value="{{ definition.name }}" required>
 		</fieldset>
 
 		<fieldset>
-			<legend>Fields</legend>
-			<button hx-get="{{ url_for('definitions.field.new') }}" hx-swap="beforeend" hx-target="#fields">Add field</button>
+			<span class="title-and-button">
+				<legend>Fields</legend>
+				<button class="button-outline"
+						tabindex="-1"
+						hx-get="{{ url_for('definitions.field.new') }}"
+						hx-swap="beforeend"
+						hx-target="#fields">
+					Add field</button>
+			</span>
 			<div id="fields" x-data="{ fieldId: 0 }">
 				{% for field in definition.fields %}
 					{% include 'definitions/new.field.twig' with {field: field} %}

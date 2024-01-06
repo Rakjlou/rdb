@@ -1,7 +1,12 @@
 {% extends 'layout.twig' %}
 {% block body %}
-	Definitions
-
+	<span class="title-and-button">
+		<h2>Definitions</h2>
+		<button hx-get="{{ url_for('definitions.new') }}"
+				hx-push-url="true"
+				hx-target="body">
+			New</button>
+	</span>
 	{% if definitions is empty %}
 		No definitions yet
 	{% else %}
@@ -17,11 +22,13 @@
 						<td>{{ definition.id }}</td>
 						<td>{{ definition.name }}</td>
 						<td>
-							<button hx-get="{{ url_for('definitions.edit', { 'id': definition.id }) }}"
+							<button class="button-outline"
+									hx-get="{{ url_for('definitions.edit', { 'id': definition.id }) }}"
 									hx-push-url="true"
 									hx-target="body">
 								Edit</button>
-							<button hx-delete="{{ url_for('definitions.delete', { 'id': definition.id }) }}"
+							<button class="button-outline"
+									hx-delete="{{ url_for('definitions.delete', { 'id': definition.id }) }}"
 									hx-target="body"
 									hx-confirm="Are you sure you want to delete {{ definition.name }} ?">
 								Delete</button>
@@ -31,5 +38,4 @@
 			</tbody>
 		</table>
 	{% endif %}
-	<a href="{{ url_for('definitions.new') }}">New</a>
 {% endblock %}
