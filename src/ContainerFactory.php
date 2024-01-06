@@ -67,6 +67,7 @@ class ContainerFactory
 					]
 				);
 
+				$twig->getEnvironment()->addGlobal('container', $container);
 				$twig->getEnvironment()->addGlobal('flash', $container->get('flash'));
 				$twig->getEnvironment()->addGlobal('site', [
 					'lang' => 'en',

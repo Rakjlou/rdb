@@ -20,6 +20,9 @@
 			<ul>
 				<li><a href="{{ url_for('home') }}">Home</a></li>
 				<li><a href="{{ url_for('definitions') }}">Definitions</a></li>
+				{% for definition in container.get('repository').get('definition').findAll() %}
+					<li><a href="#">{{ definition.name }}</a></li>
+				{% endfor %}
 			</ul>
 		</nav>
 	{% endblock %}
