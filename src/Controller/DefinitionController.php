@@ -32,7 +32,7 @@ class DefinitionController extends AbstractController
 
 	public function create(Request $request, Response $response, array $args)
 	{
-		return $this->view->render($response, 'definitions.edit.twig');
+		return $this->view->render($response, 'definitions/edit.twig');
 	}
 
 	public function createPost(Request $request, Response $response, array $args)
@@ -44,7 +44,7 @@ class DefinitionController extends AbstractController
 	{
 		return $this->view->render(
 			$response,
-			'definitions.twig',
+			'definitions/index.twig',
 			[
 				'definitions' => $this->repository->get('definition')->findAll(),
 			]
@@ -63,7 +63,7 @@ class DefinitionController extends AbstractController
 			);
 		}
 
-		return $this->view->render($response, 'definitions.edit.twig',
+		return $this->view->render($response, 'definitions/edit.twig',
 			[
 				'definition' => $definition
 			]
@@ -89,7 +89,7 @@ class DefinitionController extends AbstractController
 	{
 		if ($request->getHeaderLine('HX-Request') !== 'true')
 			return $response->withStatus(403);
-		return $this->view->render($response, 'definitions.new.field.twig');
+		return $this->view->render($response, 'definitions/new.field.twig');
 	}
 
 	private function processCreateUpdatePost(Request $request, Response $response, array $args, bool $isUpdate = false)
@@ -105,7 +105,7 @@ class DefinitionController extends AbstractController
 			|| count($_REQUEST['fieldTypeUpdate']) !== count($_REQUEST['fieldNameUpdate'])
 		) {
 			$this->flash->addMessageNow('error', 'Bad request');
-			return $this->view->render($response, 'definitions.edit.twig')->withStatus(400);
+			return $this->view->render($response, 'definitions/edit.twig')->withStatus(400);
 		}
 
 		$repository = $this->repository->get('definition');
@@ -151,13 +151,12 @@ class DefinitionController extends AbstractController
 			$this->flash->addMessageNow('error', $e->getMessage());
 			return $this->view->render(
 				$response,
-				'definitions.edit.twig',
+				'definitions/edit.twig',
 				[
 					'definition' => $definition
 				]
 			)->withStatus($status);
 		}
-
 
 		$this->flash->addMessage('info', $isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
