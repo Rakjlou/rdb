@@ -37,57 +37,7 @@ class ReviewableDefinitionController extends AbstractController
 
     public function createPost(Request $request, Response $response, array $args)
     {
-        if (empty($_REQUEST['name'])
-            || empty($_REQUEST['fieldName']) || !is_array($_REQUEST['fieldName'])
-            || empty($_REQUEST['fieldType']) || !is_array($_REQUEST['fieldType'])
-            || count($_REQUEST['fieldType']) !== count($_REQUEST['fieldName'])
-        ) {
-            $this->flash->addMessageNow('error', 'Bad request');
-            return $this->view->render($response, 'reviewables.edit.twig')->withStatus(400);
-        }
-
-        $fieldsCount = count($_REQUEST['fieldType']);
-        $repository = $this->repository->get('reviewableDefinition');
-        $definition = new ReviewableDefinition;
-
-        $definition->name($_REQUEST['name']);
-
-        for ($i = 0; $i < $fieldsCount; $i++)
-        {
-            $field = new ReviewableDefinitionField;
-
-            $field->name($_REQUEST['fieldName'][$i]);
-            $field->type($_REQUEST['fieldType'][$i]);
-            $definition->addField($field);
-        }
-
-        try
-        {
-            $repository->save($definition);
-        }
-        catch (\PDOException $e)
-        {
-            $status = 400;
-
-            if (in_array($e->getCode(), ['23000', '28000']))
-                $status = 409;
-
-            $this->flash->addMessageNow('error', $e->getMessage());
-            return $this->view->render(
-                $response,
-                'reviewables.edit.twig',
-                [
-                    'reviewable' => $definition
-                ]
-            )->withStatus($status);
-        }
-
-
-        $this->flash->addMessage('info', 'Created !');
-        return $response->withStatus(303)->withHeader(
-            'Location',
-            $this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
-        );
+        return $this->processCreateUpdatePost($request, $response, $args);
     }
 
     public function read(Request $request, Response $response, array $args)
@@ -122,12 +72,35 @@ class ReviewableDefinitionController extends AbstractController
 
     public function updatePost(Request $request, Response $response, array $args)
     {
+        return $this->processCreateUpdatePost($request, $response, $args, true);
+    }
+
+    public function delete(Request $request, Response $response, array $args)
+    {
+        $this->repository->get('reviewableDefinition')->delete(intval($args['id']));
+		$this->flash->addMessage('info', 'Reviewable deleted!');
+		return $response->withStatus(303)->withHeader(
+            'Location',
+			$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
+		);
+    }
+
+    public function xGetField(Request $request, Response $response, array $args)
+    {
+        if ($request->getHeaderLine('HX-Request') !== 'true')
+            return $response->withStatus(403);
+        return $this->view->render($response, 'reviewables.new.field.twig');
+    }
+
+    private function processCreateUpdatePost(Request $request, Response $response, array $args, bool $isUpdate = false)
+    {
         $toNormalize = ['fieldName', 'fieldType', 'fieldNameUpdate', 'fieldTypeUpdate'];
 
 		foreach ($toNormalize as $key)
 			$_REQUEST[$key] = $_REQUEST[$key] ?? [];
 
-		if (empty($_REQUEST['name']) || intval($args['id']) <= 0
+		if (empty($_REQUEST['name'])
+            || ($isUpdate && intval($args['id']) <= 0)
 			|| count($_REQUEST['fieldType']) !== count($_REQUEST['fieldName'])
 			|| count($_REQUEST['fieldTypeUpdate']) !== count($_REQUEST['fieldNameUpdate'])
 		) {
@@ -135,10 +108,8 @@ class ReviewableDefinitionController extends AbstractController
 			return $this->view->render($response, 'reviewables.edit.twig')->withStatus(400);
 		}
 
-		$fieldsCount = count($_REQUEST['fieldType']);
-		$fieldsUpdateCount = count($_REQUEST['fieldType']);
 		$repository = $this->repository->get('reviewableDefinition');
-		$definition = new ReviewableDefinition(id: intval($args['id']));
+		$definition = new ReviewableDefinition(id: $isUpdate ? intval($args['id']) : null);
 
 		$definition->name($_REQUEST['name']);
 
@@ -165,7 +136,10 @@ class ReviewableDefinitionController extends AbstractController
 
 		try
 		{
-			$repository->update($definition);
+            if ($isUpdate)
+                $repository->update($definition);
+            else
+                $repository->save($definition);
 		}
 		catch (\PDOException $e)
 		{
@@ -185,27 +159,10 @@ class ReviewableDefinitionController extends AbstractController
 		}
 
 
-		$this->flash->addMessage('info', 'Edited !');
+		$this->flash->addMessage('info', $isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
 			'Location',
 			$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
 		);
-    }
-
-    public function delete(Request $request, Response $response, array $args)
-    {
-        $this->repository->get('reviewableDefinition')->delete(intval($args['id']));
-		$this->flash->addMessage('info', 'Reviewable deleted!');
-		return $response->withStatus(303)->withHeader(
-            'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('reviewables')
-		);
-    }
-
-    public function xGetField(Request $request, Response $response, array $args)
-    {
-        if ($request->getHeaderLine('HX-Request') !== 'true')
-            return $response->withStatus(403);
-        return $this->view->render($response, 'reviewables.new.field.twig');
     }
 }
