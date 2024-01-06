@@ -16,12 +16,12 @@
 </head>
 <body hx-boost="true">
 	{% block navbar %}
-	<nav>
-	<ul>
-	<li><a href="{{ url_for('home') }}">Home</a></li>
-	<li><a href="{{ url_for('definitions') }}">Definitions</a></li>
-		</ul>
-	</nav>
+		<nav>
+			<ul>
+				<li><a href="{{ url_for('home') }}">Home</a></li>
+				<li><a href="{{ url_for('definitions') }}">Definitions</a></li>
+			</ul>
+		</nav>
 	{% endblock %}
 	{% block flashes %}
 		{% set flashMessages = flash.getMessages() %}
