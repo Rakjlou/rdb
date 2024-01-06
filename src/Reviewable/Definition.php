@@ -59,13 +59,4 @@ class Definition
 		$fields = implode(', ', array_map(fn($elem) => $elem->name() . '(' . $elem->type()->value . ')', $this->fields));
 		return "Definition(id: {$this->id}, name: {$this->name}, fields: [{$fields}])";
 	}
-
-	public function __debugInfo()
-	{
-		return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'fields' => implode(', ', array_map(fn($elem) => $elem->name() . '(' . $elem->type()->value . ')', $this->fields)),
-		];
-	}
 }
