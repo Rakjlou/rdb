@@ -16,6 +16,8 @@ $app->getContainer()->set('app', $app);
 $app->add(TwigMiddleware::createFromContainer($app));
 
 Rdb\Controller\HomeController::routes($app);
+Rdb\Controller\GradingController::routes($app);
 Rdb\Controller\DefinitionController::routes($app);
+// Rdb\Controller\ReviewableController::routes($app);
 
 $app->run();

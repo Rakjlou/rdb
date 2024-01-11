@@ -2,6 +2,7 @@
 {% block body %}
 	{% set formUrl = definition ? url_for('definitions.edit', { 'id': definition.id }) : url_for('definitions.new') %}
 	{% set pageHeading = definition ? 'Edit ' ~ definition.name : 'Create definition' %}
+	{% set scales = container.get('repository').get('grading').findAll() %}
 
 	<h2>{{ pageHeading }}</h2>
 	<form action="{{ formUrl }} " method="post">
@@ -9,6 +10,14 @@
 			<legend>Global Info</legend>
 			<label for="name">Name</label>
 			<input type="text" id="name" name="name" value="{{ definition.name }}" required>
+			<label for="scale">Scale</label>
+			<select id="scale" name="scale">
+				{% for scale in scales %}
+					<option	value="{{ scale.id }}"
+							{% if scale.id == definition.scale.id %}selected{% endif %}>
+						{{ scale.name | capitalize }}</option>
+				{% endfor %}
+			</select>
 		</fieldset>
 
 		<fieldset>
@@ -21,7 +30,7 @@
 						hx-target="#fields">
 					Add field</button>
 			</span>
-			<div id="fields" x-data="{ fieldId: 0 }">
+			<div id="fields" class="inline-button-row" x-data="{ fieldId: 0 }">
 				{% for field in definition.fields %}
 					{% include 'definitions/new.field.twig' with {field: field} %}
 				{% endfor %}
@@ -37,5 +46,4 @@
 				Delete</button>
 		{% endif %}
 	</form>
-
 {% endblock %}

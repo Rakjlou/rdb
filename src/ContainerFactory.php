@@ -7,6 +7,7 @@ use Slim\Flash\Messages;
 
 use Rdb\Db\SQLiteDatabase;
 use Rdb\Repository\DefinitionRepository;
+use Rdb\Repository\GradingRepository;
 
 class ContainerFactory
 {
@@ -43,10 +44,8 @@ class ContainerFactory
 			{
 				$repositoryContainer = new Container();
 
-				$repositoryContainer->set(
-					'definition',
-					fn () => new DefinitionRepository($container->get('db'))
-				);
+				$repositoryContainer->set('definition', fn () => new DefinitionRepository($container->get('db'), $container));
+				$repositoryContainer->set('grading', fn () => new GradingRepository($container->get('db'), $container));
 
 				return $repositoryContainer;
 			}

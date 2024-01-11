@@ -35,11 +35,21 @@ function makeDbFile(Container $container)
 	}
 }
 
+function createGradingTables($container)
+{
+	$db = $container->get('db');
+	$sql = file_get_contents(implode(DIRECTORY_SEPARATOR, [__DIR__, 'install-db', 'create-grading.sql']));
+	$ret = $db->getPdo()->exec($sql);
+
+	logMsg("Grading tables created !");
+}
+
 function createReviewableTables($container)
 {
 	$db = $container->get('db');
 	$sql = file_get_contents(implode(DIRECTORY_SEPARATOR, [__DIR__, 'install-db', 'create-reviewables.sql']));
 	$ret = $db->getPdo()->exec($sql);
+
 	logMsg("Reviewable tables created !");
 }
 
@@ -49,4 +59,5 @@ $container = ContainerFactory::get();
 
 makeDataDirectory($projectDataDirectory);
 makeDbFile($container);
+createGradingTables($container);
 createReviewableTables($container);

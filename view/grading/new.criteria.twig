@@ -1,0 +1,50 @@
+<section class="row" x-init="criteriaCount++" x-id="['criteria']">
+	<div class="column" x-show="criteriaCount !== 0" x-id="['criteria-name']">
+		<label :for="$id('criteria-name')">Criteria name:</label>
+		<input
+			:id="$id('criteria-name')"
+			{% if criteria %}
+				:name="'updateCriteria[{{ criteria.id }}][name]'"
+			{% else %}
+				:name="'criteria[' + $id('criteria') + '][name]'"
+			{% endif %}
+			:required="criteriaCount !== 0"
+			type="text"
+			value="{{ criteria.name }}"
+		>
+	</div>
+	<div class="column" x-id="['criteria-min']">
+		<label :for="$id('criteria-min')">Min value:</label>
+		<input
+			:id="$id('criteria-min')"
+			{% if criteria %}
+				:name="'updateCriteria[{{ criteria.id }}][min]'"
+			{% else %}
+				:name="'criteria[' + $id('criteria') + '][min]'"
+			{% endif %}
+			type="number"
+			step="1"
+			value="{{ criteria.min }}"
+			required
+		>
+	</div>
+	<div class="column" x-id="['criteria-max']">
+		<label :for="$id('criteria-max')">Max value:</label>
+		<input
+			:id="$id('criteria-max')"
+			{% if criteria %}
+				:name="'updateCriteria[{{ criteria.id }}][max]'"
+			{% else %}
+				:name="'criteria[' + $id('criteria') + '][max]'"
+			{% endif %}
+			type="number"
+			step="1"
+			value="{{ criteria.max }}"
+			required
+		>
+	</div>
+	<div class="column">
+		<button class="button-clear"
+				x-on:click="criteriaCount--; $el.closest('section').remove();">Delete</button>
+	</div>
+</section>

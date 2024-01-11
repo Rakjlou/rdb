@@ -1,0 +1,40 @@
+{% extends 'layout.twig' %}
+{% block body %}
+	{% set formUrl = scale ? url_for('grading.edit', { 'id': scale.id }) : url_for('grading.new') %}
+	{% set pageHeading = scale ? 'Edit ' ~ scale.name : 'Create grading scale' %}
+
+	<h2>{{ pageHeading }}</h2>
+	<form action="{{ formUrl }} " method="post">
+		<fieldset>
+			<legend>Global Info</legend>
+			<label for="name">Name</label>
+			<input type="text" id="name" name="name" value="{{ scale.name }}" required>
+		</fieldset>
+
+		<fieldset>
+			<span class="title-and-button">
+				<legend>Criterias</legend>
+				<button class="button-outline"
+						tabindex="-1"
+						hx-get="{{ url_for('grading.criteria.new') }}"
+						hx-swap="beforeend"
+						hx-target="#criterias">
+					Add criteria</button>
+			</span>
+			<div id="criterias" class="inline-button-row" x-data="{ criteriaCount: -1 }">
+				{% for criteria in scale.criterias %}
+					{% include 'grading/new.criteria.twig' with {criteria: criteria} %}
+				{% endfor %}
+			</div>
+		</fieldset>
+
+		<button type="submit">Submit</button>
+		{% if definition %}
+			<button hx-delete="{{ url_for('definitions.delete', { 'id': definition.id }) }}"
+					hx-target="body"
+					hx-push-url="true"
+					hx-confirm="Are you sure you want to delete {{ definition.name }} ?">
+				Delete</button>
+		{% endif %}
+	</form>
+{% endblock %}

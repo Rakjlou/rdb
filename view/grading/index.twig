@@ -1,0 +1,41 @@
+{% extends 'layout.twig' %}
+{% block body %}
+	<span class="title-and-button">
+		<h2>Grading</h2>
+		<button hx-get="{{ url_for('grading.new') }}"
+				hx-push-url="true"
+				hx-target="body">
+			New</button>
+	</span>
+	{% if scales is empty %}
+		No grading scales yet.
+	{% else %}
+		<table>
+			<thead>
+				<th>#</th>
+				<th>Name</th>
+				<th>Actions</th>
+			</thead>
+			<tbody>
+				{% for scale in scales %}
+					<tr>
+						<td>{{ scale.id }}</td>
+						<td>{{ scale.name }}</td>
+						<td>
+							<button class="button-outline"
+									hx-get="{{ url_for('grading.edit', { 'id': scale.id }) }}"
+									hx-push-url="true"
+									hx-target="body">
+								Edit</button>
+							<button class="button-outline"
+									hx-delete="{{ url_for('grading.delete', { 'id': scale.id }) }}"
+									hx-target="body"
+									hx-confirm="Are you sure you want to delete {{ scale.name }} ?">
+								Delete</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+{% endblock %}

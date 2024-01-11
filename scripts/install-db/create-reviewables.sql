@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS `Definition` (
   `id` INTEGER PRIMARY KEY,
-  `name` TEXT UNIQUE NOT NULL CHECK (`name` <> '')
+  `name` TEXT UNIQUE NOT NULL CHECK (`name` <> ''),
+  `scale_id` INTEGER NOT NULL,
+  FOREIGN KEY (`scale_id`) REFERENCES `GradingScale` (`id`) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `DefinitionField` (

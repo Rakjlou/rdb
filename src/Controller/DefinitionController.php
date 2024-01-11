@@ -65,7 +65,7 @@ class DefinitionController extends AbstractController
 
 		return $this->view->render($response, 'definitions/edit.twig',
 			[
-				'definition' => $definition
+				'definition' => $definition,
 			]
 		);
 	}
@@ -108,10 +108,13 @@ class DefinitionController extends AbstractController
 			return $this->view->render($response, 'definitions/edit.twig')->withStatus(400);
 		}
 
+		$gradingRepo = $this->repository->get('grading');
 		$repository = $this->repository->get('definition');
-		$definition = new Definition(id: $isUpdate ? intval($args['id']) : null);
-
-		$definition->name($_REQUEST['name']);
+		$definition = new Definition(
+			id: $isUpdate ? intval($args['id']) : null,
+			name: $_REQUEST['name'],
+			scale: $gradingRepo->findById(intval($_REQUEST['scale']))
+		);
 
 		foreach (array_keys($_REQUEST['fieldNameUpdate']) as $key)
 		{
@@ -153,7 +156,7 @@ class DefinitionController extends AbstractController
 				$response,
 				'definitions/edit.twig',
 				[
-					'definition' => $definition
+					'definition' => $definition,
 				]
 			)->withStatus($status);
 		}

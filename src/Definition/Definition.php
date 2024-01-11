@@ -1,12 +1,15 @@
 <?php
 namespace Rdb\Definition;
 
+use Rdb\Grading\Scale;
+
 class Definition
 {
 	public function __construct(
 		protected ?int $id = null,
 		protected ?string $name = null,
-		protected array $fields = []
+		protected array $fields = [],
+		protected ?Scale $scale = null
 	) {}
 
 	public function id(?int $id = null): null|int|Definition
@@ -22,6 +25,14 @@ class Definition
 		if ($name === null)
 			return $this->name;
 		$this->name = trim($name);
+		return $this;
+	}
+
+	public function scale(?Scale $scale = null): null|Scale|Definition
+	{
+		if ($scale === null)
+			return $this->scale;
+		$this->scale = $scale;
 		return $this;
 	}
 
@@ -42,16 +53,6 @@ class Definition
 		$field->def($this);
 		$this->fields[] = $field;
 		return $this;
-	}
-
-	public function removeField(Field|int $field)
-	{
-		if ($field instanceof Field && $field->name() !== null)
-			$this->fields(array_filter($this->fields, fn($elem) => $elem->name() !== $field->name()));
-		else if ($field instanceof int)
-			$this->fields(array_filter($this->fields, fn($elem) => $elem->id() !== $field));
-		else
-			error_log(self::class . "::removeField ignoring invalid parameter '{$field}'");
 	}
 
 	public function __toString(): string

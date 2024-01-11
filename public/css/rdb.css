@@ -37,7 +37,7 @@ legend {
 	font-size: 2rem;
 }
 
-#fields > section .column:last-child {
+.inline-button-row > section .column:last-child {
 	justify-content: center;
 	display: flex;
 	align-items: end;

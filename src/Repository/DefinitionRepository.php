@@ -1,6 +1,8 @@
 <?php
 namespace Rdb\Repository;
 
+use Psr\Container\ContainerInterface;
+
 use Rdb\Db\DatabaseInterface;
 use Rdb\Definition\Definition;
 use Rdb\Definition\Field;
@@ -13,7 +15,8 @@ class DefinitionRepository
 	const FIELD_DEFINITION_TABLE = 'DefinitionField';
 
 	public function __construct(
-		protected DatabaseInterface $db
+		protected DatabaseInterface $db,
+		protected ContainerInterface $container
 	) {}
 
 	public function save(Definition $definition): Definition
@@ -25,8 +28,9 @@ class DefinitionRepository
 		$table = self::DEFINITION_TABLE;
 
 		// Saving Definition
-		$stmt = $pdo->prepare("INSERT INTO `$table` (`name`) VALUES (:name)");
+		$stmt = $pdo->prepare("INSERT INTO `$table` (`name`, `scale_id`) VALUES (:name, :scale)");
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
+		$stmt->bindValue(':scale', $definition->scale()->id(), PDO::PARAM_INT);
 		$stmt->execute();
 
 		// Saving DefinitionField
@@ -55,9 +59,10 @@ class DefinitionRepository
 		$pdo = $this->db->getPdo();
 		$table = self::DEFINITION_TABLE;
 		$reference = $this->findById($definition->id());
-		$stmt = $pdo->prepare("UPDATE `$table` SET `name` = :name WHERE `id` = :id");
+		$stmt = $pdo->prepare("UPDATE `$table` SET `name` = :name, `scale_id` = :scale WHERE `id` = :id");
 		$stmt->bindValue(':id', $definition->id(), PDO::PARAM_INT);
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
+		$stmt->bindValue(':scale', $definition->scale()->id(), PDO::PARAM_INT);
 		$stmt->execute();
 
 		// Saving DefinitionField
@@ -68,7 +73,7 @@ class DefinitionRepository
 		{
 			if ($field->id() === null)
 			{
-				$stmt = $pdo->prepare("INSERT INTO `$table` (def_id, type, name) VALUES (:defId, :type, :name)");
+				$stmt = $pdo->prepare("INSERT INTO `$table` (`def_id`, `type`, `name`) VALUES (:defId, :type, :name)");
 				$stmt->bindValue(':defId', $definition->id(), PDO::PARAM_INT);
 				$stmt->bindValue(':type', $field->type()->value, PDO::PARAM_STR);
 				$stmt->bindValue(':name', $field->name(), PDO::PARAM_STR);
@@ -120,7 +125,13 @@ class DefinitionRepository
 		$stmt->execute();
 
 		while ($row = $stmt->fetch())
-			$result[] = $this->hydrateFields(new Definition(id: $row['id'], name: $row['name']));
+		{
+			$result[] = $this->hydrateFields(new Definition(
+				id: $row['id'],
+				name: $row['name'],
+				scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
+			));
+		}
 		return $result;
 	}
 
@@ -133,7 +144,13 @@ class DefinitionRepository
 		$stmt->execute();
 
 		if ($row = $stmt->fetch())
-			return $this->hydrateFields(new Definition(id: $row['id'], name: $row['name']));
+		{
+			return $this->hydrateFields(new Definition(
+				id: $row['id'],
+				name: $row['name'],
+				scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
+			));
+		}
 
 		return null;
 	}
