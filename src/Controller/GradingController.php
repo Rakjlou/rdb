@@ -6,93 +6,83 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Rdb\Grading\Scale as Scale;
 use Rdb\Grading\Criteria as Criteria;
+use Rdb\Middleware\HtmxOnlyMiddleware;
 
-class GradingController extends AbstractController
+class GradingController extends CrudController
 {
 	public function route(): ControllerInterface
 	{
-		$app = $this->app;
+		parent::route();
 
-		// Create
-		$app->get('/grading/new', [$this, 'create'])->setName('grading.new');
-		$app->post('/grading/new', [$this, 'createPost'])->setName('grading.new.post');
-
-		// Read
-		$app->get('/grading', [$this, 'read'])->setName('grading');
-
-		// Update
-		$app->get('/grading/{id}/edit', [$this, 'update'])->setName('grading.edit');
-		$app->post('/grading/{id}/edit', [$this, 'updatePost'])->setName('grading.edit.post');
-
-		// Delete
-		$app->delete('/grading/{id}', [$this, 'delete'])->setName('grading.delete');
-
-		// HTMX-only
-		$app->get('/grading/new/criteria', [$this, 'xGetCriteria'])->setName('grading.criteria.new');
-
+		$this->app->get('/grading/new/criteria', [$this, 'xGetCriteria'])
+			->setName('grading.criteria.new')
+			->add(HtmxOnlyMiddleware::class);
 		return $this;
 	}
 
-	public function create(Request $request, Response $response, array $args)
+	public function prefix(): string
 	{
-		return $this->view->render($response, 'grading/edit.twig');
+		return 'grading';
 	}
 
-	public function createPost(Request $request, Response $response, array $args)
+	public function create(Request $request, Response $response, array $args): Response
+	{
+		return $this->render($response, 'grading/edit.twig');
+	}
+
+	public function createPost(Request $request, Response $response, array $args): Response
 	{
 		return $this->processCreateUpdatePost($request, $response, $args);
 	}
 
-	public function read(Request $request, Response $response, array $args)
+	public function read(Request $request, Response $response, array $args): Response
 	{
-		return $this->view->render(
+		return $this->render(
 			$response,
 			'grading/index.twig',
 			[
-				'scales' => $this->repository->get('grading')->findAll(),
+				'scales' => $this->repository('grading')->findAll(),
 			]
 		);
 	}
 
-	public function update(Request $request, Response $response, array $args)
+	public function update(Request $request, Response $response, array $args): Response
 	{
-		$scale = $this->repository->get('grading')->findById(intval($args['id']));
+		$scale = $this->repository('grading')->findById(intval($args['id']));
 
 		if (!$scale) {
-			$this->flash->addMessage('error', 'Scale not found!');
+			$this->flashError('Scale not found!');
 			return $response->withStatus(404)->withHeader(
 				'Location',
-				$this->app->getRouteCollector()->getRouteParser()->urlFor('grading')
+				$this->urlFor('grading')
 			);
 		}
 
-		return $this->view->render($response, 'grading/edit.twig',
+		return $this->render($response, 'grading/edit.twig',
 			[
 				'scale' => $scale
 			]
 		);
 	}
 
-	public function updatePost(Request $request, Response $response, array $args)
+	public function updatePost(Request $request, Response $response, array $args): Response
 	{
 		return $this->processCreateUpdatePost($request, $response, $args, true);
 	}
 
-	public function delete(Request $request, Response $response, array $args)
+	public function delete(Request $request, Response $response, array $args): Response
 	{
-		$this->repository->get('grading')->delete(intval($args['id']));
-		$this->flash->addMessage('success', 'Scale deleted!');
+		$this->repository('grading')->delete(intval($args['id']));
+		$this->flashSuccess('Scale deleted!');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('grading')
+			$this->urlFor('grading')
 		);
 	}
 
 	public function xGetCriteria(Request $request, Response $response, array $args)
 	{
-		if ($request->getHeaderLine('HX-Request') !== 'true')
-			return $response->withStatus(403);
-		return $this->view->render($response, 'grading/new.criteria.twig');
+		return $this->render($response, 'grading/new.criteria.twig');
 	}
 
 	private function processCreateUpdatePost(Request $request, Response $response, array $args, bool $isUpdate = false)
@@ -104,8 +94,8 @@ class GradingController extends AbstractController
 			|| (isset($formData['updateCriteria']) && (empty($formData['updateCriteria']) || !is_array($formData['updateCriteria'])))
 		)
 		{
-			$this->flash->addMessageNow('error', 'Bad request1');
-			return $this->view->render($response, 'grading/edit.twig')->withStatus(400);
+			$this->flashErrorNow('Bad request');
+			return $this->render($response, 'grading/edit.twig')->withStatus(400);
 		}
 
 		$scale = new Scale(
@@ -122,8 +112,8 @@ class GradingController extends AbstractController
 			{
 				if (!isset($criteria['name']) || !isset($criteria['min']) || !isset($criteria['max']))
 				{
-					$this->flash->addMessageNow('error', 'Bad request2');
-					return $this->view->render($response, 'grading/edit.twig')->withStatus(400);
+					$this->flashErrorNow('Bad request');
+					return $this->render($response, 'grading/edit.twig')->withStatus(400);
 				}
 
 				$scale->addCriteria(new Criteria(
@@ -137,7 +127,7 @@ class GradingController extends AbstractController
 
 		try
 		{
-			$repository = $this->repository->get('grading');
+			$repository = $this->repository('grading');
 
 			if ($isUpdate)
 				$repository->update($scale);
@@ -151,8 +141,8 @@ class GradingController extends AbstractController
 			if (in_array($e->getCode(), ['23000', '28000']))
 				$status = 409;
 
-			$this->flash->addMessageNow('error', $e->getMessage());
-			return $this->view->render(
+			$this->flashErrorNow($e->getMessage());
+			return $this->render(
 				$response,
 				'grading/edit.twig',
 				[
@@ -161,10 +151,10 @@ class GradingController extends AbstractController
 			)->withStatus($status);
 		}
 
-		$this->flash->addMessage('success', $isUpdate ? 'Edited !' : 'Created !');
+		$this->flashSuccess($isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('grading')
+			$this->urlFor('grading')
 		);
 	}
 

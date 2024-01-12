@@ -10,6 +10,12 @@ use Rdb\Definition\FieldType as DefinitionFieldType;
 
 class DefinitionController extends AbstractController
 {
+	// 	$app->delete('/definitions/{id}', [self::class, 'delete'])->setName('definitions.delete');
+
+	// 	// HTMX-only
+	// 	$app->get('/definitions/new/field', [self::class, 'xGetField'])->setName('definitions.field.new');
+	// }
+
 	public function route(): ControllerInterface
 	{
 		$app = $this->app;
@@ -35,7 +41,7 @@ class DefinitionController extends AbstractController
 
 	public function create(Request $request, Response $response, array $args)
 	{
-		return $this->view->render($response, 'definitions/edit.twig');
+		return $this->render($response, 'definitions/edit.twig');
 	}
 
 	public function createPost(Request $request, Response $response, array $args)
@@ -45,28 +51,28 @@ class DefinitionController extends AbstractController
 
 	public function read(Request $request, Response $response, array $args)
 	{
-		return $this->view->render(
+		return $this->render(
 			$response,
 			'definitions/index.twig',
 			[
-				'definitions' => $this->repository->get('definition')->findAll(),
+				'definitions' => $this->repository('definition')->findAll(),
 			]
 		);
 	}
 
 	public function update(Request $request, Response $response, array $args)
 	{
-		$definition = $this->repository->get('definition')->findById(intval($args['id']));
+		$definition = $this->repository('definition')->findById(intval($args['id']));
 
 		if (!$definition) {
-			$this->flash->addMessage('error', 'Definition not found!');
+			$this->flashError('Definition not found!');
 			return $response->withStatus(404)->withHeader(
 				'Location',
-				$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
+				$this->urlFor('definitions')
 			);
 		}
 
-		return $this->view->render($response, 'definitions/edit.twig',
+		return $this->render($response, 'definitions/edit.twig',
 			[
 				'definition' => $definition,
 			]
@@ -80,11 +86,11 @@ class DefinitionController extends AbstractController
 
 	public function delete(Request $request, Response $response, array $args)
 	{
-		$this->repository->get('definition')->delete(intval($args['id']));
-		$this->flash->addMessage('success', 'Definition deleted!');
+		$this->repository('definition')->delete(intval($args['id']));
+		$this->flashSuccess('Definition deleted!');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
+			$this->urlFor('definitions')
 		);
 	}
 
@@ -92,7 +98,7 @@ class DefinitionController extends AbstractController
 	{
 		if ($request->getHeaderLine('HX-Request') !== 'true')
 			return $response->withStatus(403);
-		return $this->view->render($response, 'definitions/new.field.twig');
+		return $this->render($response, 'definitions/new.field.twig');
 	}
 
 	private function processCreateUpdatePost(Request $request, Response $response, array $args, bool $isUpdate = false)
@@ -107,12 +113,12 @@ class DefinitionController extends AbstractController
 			|| count($_REQUEST['fieldType']) !== count($_REQUEST['fieldName'])
 			|| count($_REQUEST['fieldTypeUpdate']) !== count($_REQUEST['fieldNameUpdate'])
 		) {
-			$this->flash->addMessageNow('error', 'Bad request');
-			return $this->view->render($response, 'definitions/edit.twig')->withStatus(400);
+			$this->flashError('Bad request');
+			return $this->render($response, 'definitions/edit.twig')->withStatus(400);
 		}
 
-		$gradingRepo = $this->repository->get('grading');
-		$repository = $this->repository->get('definition');
+		$gradingRepo = $this->repository('grading');
+		$repository = $this->repository('definition');
 		$definition = new Definition(
 			id: $isUpdate ? intval($args['id']) : null,
 			name: $_REQUEST['name'],
@@ -154,8 +160,8 @@ class DefinitionController extends AbstractController
 			if (in_array($e->getCode(), ['23000', '28000']))
 				$status = 409;
 
-			$this->flash->addMessageNow('error', $e->getMessage());
-			return $this->view->render(
+			$this->flashError($e->getMessage());
+			return $this->render(
 				$response,
 				'definitions/edit.twig',
 				[
@@ -164,10 +170,10 @@ class DefinitionController extends AbstractController
 			)->withStatus($status);
 		}
 
-		$this->flash->addMessage('success', $isUpdate ? 'Edited !' : 'Created !');
+		$this->flashSuccess($isUpdate ? 'Edited !' : 'Created !');
 		return $response->withStatus(303)->withHeader(
 			'Location',
-			$this->app->getRouteCollector()->getRouteParser()->urlFor('definitions')
+			$this->urlFor('definitions')
 		);
 	}
 }
