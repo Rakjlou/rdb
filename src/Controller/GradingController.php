@@ -9,24 +9,28 @@ use Rdb\Grading\Criteria as Criteria;
 
 class GradingController extends AbstractController
 {
-	static public function routes($app)
+	public function route(): ControllerInterface
 	{
+		$app = $this->app;
+
 		// Create
-		$app->get('/grading/new', [self::class, 'create'])->setName('grading.new');
-		$app->post('/grading/new', [self::class, 'createPost'])->setName('grading.new.post');
+		$app->get('/grading/new', [$this, 'create'])->setName('grading.new');
+		$app->post('/grading/new', [$this, 'createPost'])->setName('grading.new.post');
 
 		// Read
-		$app->get('/grading', [self::class, 'read'])->setName('grading');
+		$app->get('/grading', [$this, 'read'])->setName('grading');
 
 		// Update
-		$app->get('/grading/{id}/edit', [self::class, 'update'])->setName('grading.edit');
-		$app->post('/grading/{id}/edit', [self::class, 'updatePost'])->setName('grading.edit.post');
+		$app->get('/grading/{id}/edit', [$this, 'update'])->setName('grading.edit');
+		$app->post('/grading/{id}/edit', [$this, 'updatePost'])->setName('grading.edit.post');
 
 		// Delete
-		$app->delete('/grading/{id}', [self::class, 'delete'])->setName('grading.delete');
+		$app->delete('/grading/{id}', [$this, 'delete'])->setName('grading.delete');
 
 		// HTMX-only
-		$app->get('/grading/new/criteria', [self::class, 'xGetCriteria'])->setName('grading.criteria.new');
+		$app->get('/grading/new/criteria', [$this, 'xGetCriteria'])->setName('grading.criteria.new');
+
+		return $this;
 	}
 
 	public function create(Request $request, Response $response, array $args)

@@ -11,7 +11,7 @@ use Slim\App;
 use Slim\Views\Twig;
 use Slim\Flash\Messages as FlashMessages;
 
-abstract class AbstractController
+abstract class AbstractController implements ControllerInterface
 {
 	protected App $app;
 	protected ContainerInterface $container;

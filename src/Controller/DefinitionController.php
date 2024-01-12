@@ -10,24 +10,27 @@ use Rdb\Definition\FieldType as DefinitionFieldType;
 
 class DefinitionController extends AbstractController
 {
-	static public function routes($app)
+	public function route(): ControllerInterface
 	{
-		// Create
-		$app->get('/definitions/new', [self::class, 'create'])->setName('definitions.new');
-		$app->post('/definitions/new', [self::class, 'createPost'])->setName('definitions.new.post');
+		$app = $this->app;
+
+		$app->get('/definitions/new', [$this, 'create'])->setName('definitions.new');
+		$app->post('/definitions/new', [$this, 'createPost'])->setName('definitions.new.post');
 
 		// Read
-		$app->get('/definitions', [self::class, 'read'])->setName('definitions');
+		$app->get('/definitions', [$this, 'read'])->setName('definitions');
 
 		// Update
-		$app->get('/definitions/{id}/edit', [self::class, 'update'])->setName('definitions.edit');
-		$app->post('/definitions/{id}/edit', [self::class, 'updatePost'])->setName('definitions.edit.post');
+		$app->get('/definitions/{id}/edit', [$this, 'update'])->setName('definitions.edit');
+		$app->post('/definitions/{id}/edit', [$this, 'updatePost'])->setName('definitions.edit.post');
 
 		// Delete
-		$app->delete('/definitions/{id}', [self::class, 'delete'])->setName('definitions.delete');
+		$app->delete('/definitions/{id}', [$this, 'delete'])->setName('definitions.delete');
 
 		// HTMX-only
-		$app->get('/definitions/new/field', [self::class, 'xGetField'])->setName('definitions.field.new');
+		$app->get('/definitions/new/field', [$this, 'xGetField'])->setName('definitions.field.new');
+
+		return $this;
 	}
 
 	public function create(Request $request, Response $response, array $args)

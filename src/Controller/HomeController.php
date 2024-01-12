@@ -6,9 +6,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class HomeController extends AbstractController
 {
-	static public function routes($app)
+	public function route(): ControllerInterface
 	{
-		$app->get('/', [self::class, 'home'])->setName('home');
+		$app = $this->app;
+
+		$app->get('/', [$this, 'home'])->setName('home');
+
+		return $this;
 	}
 
 	public function home(Request $request, Response $response, array $args)

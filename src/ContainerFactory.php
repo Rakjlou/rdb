@@ -6,8 +6,13 @@ use Slim\Views\Twig;
 use Slim\Flash\Messages;
 
 use Rdb\Db\SQLiteDatabase;
+
 use Rdb\Repository\DefinitionRepository;
 use Rdb\Repository\GradingRepository;
+
+use Rdb\Controller\HomeController;
+use Rdb\Controller\GradingController;
+use Rdb\Controller\DefinitionController;
 
 class ContainerFactory
 {
@@ -19,6 +24,7 @@ class ContainerFactory
 		self::setDb($container);
 		self::setRepository($container);
 		self::setView($container);
+		self::setController($container);
 
 		return $container;
 	}
@@ -86,6 +92,23 @@ class ContainerFactory
 				}));
 
 				return $twig;
+			}
+		);
+	}
+
+	static protected function setController(Container $container): void
+	{
+		$container->set(
+			'controller',
+			function () use ($container)
+			{
+				$controllersContainer = new Container();
+
+				$controllersContainer->set('home', fn () => new HomeController($container));
+				$controllersContainer->set('grading', fn () => new GradingController($container));
+				$controllersContainer->set('definition', fn () => new DefinitionController($container));
+
+				return $controllersContainer;
 			}
 		);
 	}
