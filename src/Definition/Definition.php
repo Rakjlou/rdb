@@ -1,6 +1,8 @@
 <?php
 namespace Rdb\Definition;
 
+use Cocur\Slugify\Slugify;
+
 use Rdb\Grading\Scale;
 
 class Definition
@@ -8,6 +10,7 @@ class Definition
 	public function __construct(
 		protected ?int $id = null,
 		protected ?string $name = null,
+		protected ?string $slug = null,
 		protected array $fields = [],
 		protected ?Scale $scale = null
 	) {}
@@ -25,6 +28,14 @@ class Definition
 		if ($name === null)
 			return $this->name;
 		$this->name = trim($name);
+		return $this->slug((new Slugify)->slugify($this->name));
+	}
+
+	public function slug(?string $slug = null): null|string|Definition
+	{
+		if ($slug === null)
+			return $this->slug;
+		$this->slug = trim($slug);
 		return $this;
 	}
 

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `Definition` (
   `id` INTEGER PRIMARY KEY,
   `name` TEXT UNIQUE NOT NULL CHECK (`name` <> ''),
+  `slug` TEXT UNIQUE NOT NULL CHECK (`slug` <> ''),
   `scale_id` INTEGER NOT NULL,
   FOREIGN KEY (`scale_id`) REFERENCES `GradingScale` (`id`) ON DELETE RESTRICT
 );
@@ -43,3 +44,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_reviewable_field_def_unique
 
 CREATE INDEX IF NOT EXISTS idx_reviewable_field_def_datatype
   ON DefinitionField(type);
+
+CREATE INDEX IF NOT EXISTS idx_definition_slug
+  ON Definition(slug);

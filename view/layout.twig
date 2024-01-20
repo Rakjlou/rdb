@@ -26,7 +26,7 @@
 			{% block navbar %}
 				<span>
 					{% for definition in container.get('repository').get('definition').findAll() %}
-						<a href="#">{{ definition.name }}</a>
+						<a href="{{ url_for('review', { slug: definition.slug }) }}">{{ definition.name }}</a>
 					{% endfor %}
 					<a href="{{ url_for('definitions') }}">Definitions</a>
 					<a href="{{ url_for('grading') }}">Grading</a>

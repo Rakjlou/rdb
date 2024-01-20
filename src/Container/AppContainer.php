@@ -1,12 +1,13 @@
 <?php
 namespace Rdb\Container;
 
-
 use Slim\App;
 use Slim\Views\Twig;
 use Slim\Flash\Messages;
 
 use DI\Container;
+
+use Cocur\Slugify\Slugify;
 
 use Rdb\Db\SQLiteDatabase;
 
@@ -16,6 +17,7 @@ use Rdb\Repository\GradingRepository;
 use Rdb\Controller\HomeController;
 use Rdb\Controller\GradingController;
 use Rdb\Controller\DefinitionController;
+use Rdb\Controller\ReviewController;
 
 use Rdb\Middleware\HtmxOnlyMiddleware;
 
@@ -25,7 +27,6 @@ class AppContainer
 	{
 		$container = $app->getContainer();
 
-
 		$container->set('app', $app);
 
 		self::setFlash($container);
@@ -33,6 +34,7 @@ class AppContainer
 		self::setRepository($container);
 		self::setView($container);
 		self::setController($container);
+
 		$container->set(HtmxOnlyMiddleware::class, fn() => new HtmxOnlyMiddleware($app));
 	}
 
@@ -86,6 +88,7 @@ class AppContainer
 				]);
 				$twig->addExtension(new \Twig\Extension\DebugExtension());
 
+				$twig->getEnvironment()->addFilter(new \Twig\TwigFilter('slug', fn ($string) => (new Slugify())->slugify($string)));
 				$twig->getEnvironment()->addFunction(new \Twig\TwigFunction('callstatic', function ($class, $method, ...$args) {
 					if (!class_exists($class)) {
 						throw new \Exception("Cannot call static method $method on Class $class: Invalid Class");
@@ -114,6 +117,7 @@ class AppContainer
 				$controllersContainer->set('home', fn () => new HomeController($container));
 				$controllersContainer->set('grading', fn () => new GradingController($container));
 				$controllersContainer->set('definition', fn () => new DefinitionController($container));
+				$controllersContainer->set('review', fn () => new ReviewController($container));
 
 				return $controllersContainer;
 			}

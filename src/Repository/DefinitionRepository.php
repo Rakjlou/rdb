@@ -3,6 +3,8 @@ namespace Rdb\Repository;
 
 use Psr\Container\ContainerInterface;
 
+use Cocur\Slugify\Slugify;
+
 use Rdb\Db\DatabaseInterface;
 use Rdb\Definition\Definition;
 use Rdb\Definition\Field;
@@ -28,8 +30,9 @@ class DefinitionRepository
 		$table = self::DEFINITION_TABLE;
 
 		// Saving Definition
-		$stmt = $pdo->prepare("INSERT INTO `$table` (`name`, `scale_id`) VALUES (:name, :scale)");
+		$stmt = $pdo->prepare("INSERT INTO `$table` (`name`, `slug`, `scale_id`) VALUES (:name, :slug, :scale)");
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
+		$stmt->bindValue(':slug', $definition->slug() ?? (new Slugify())->slugify($definition->name()), PDO::PARAM_STR);
 		$stmt->bindValue(':scale', $definition->scale()->id(), PDO::PARAM_INT);
 		$stmt->execute();
 
@@ -59,9 +62,10 @@ class DefinitionRepository
 		$pdo = $this->db->getPdo();
 		$table = self::DEFINITION_TABLE;
 		$reference = $this->findById($definition->id());
-		$stmt = $pdo->prepare("UPDATE `$table` SET `name` = :name, `scale_id` = :scale WHERE `id` = :id");
+		$stmt = $pdo->prepare("UPDATE `$table` SET `name` = :name, `slug` = :slug, `scale_id` = :scale WHERE `id` = :id");
 		$stmt->bindValue(':id', $definition->id(), PDO::PARAM_INT);
 		$stmt->bindValue(':name', $definition->name(), PDO::PARAM_STR);
+		$stmt->bindValue(':slug', $definition->slug(), PDO::PARAM_STR);
 		$stmt->bindValue(':scale', $definition->scale()->id(), PDO::PARAM_INT);
 		$stmt->execute();
 
@@ -142,12 +146,12 @@ class DefinitionRepository
 		return null;
 	}
 
-	public function findByName(string $name): ?Definition
+	public function findBySlug(string $slug): ?Definition
 	{
 		$pdo = $this->db->getPdo();
 		$table = self::DEFINITION_TABLE;
-		$stmt = $pdo->prepare("SELECT * FROM `$table` WHERE name = :name");
-		$stmt->bindValue(':name', $name, PDO::PARAM_STR);
+		$stmt = $pdo->prepare("SELECT * FROM `$table` WHERE slug = :slug");
+		$stmt->bindValue(':slug', $slug, PDO::PARAM_STR);
 		$stmt->execute();
 
 		if ($row = $stmt->fetch())
@@ -160,6 +164,7 @@ class DefinitionRepository
 		return $this->hydrateFields(new Definition(
 			id: $row['id'],
 			name: $row['name'],
+			slug: $row['slug'],
 			scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
 		));
 	}

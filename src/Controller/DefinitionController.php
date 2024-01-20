@@ -113,7 +113,7 @@ class DefinitionController extends AbstractController
 			|| count($_REQUEST['fieldType']) !== count($_REQUEST['fieldName'])
 			|| count($_REQUEST['fieldTypeUpdate']) !== count($_REQUEST['fieldNameUpdate'])
 		) {
-			$this->flashError('Bad request');
+			$this->flashErrorNow('Bad request');
 			return $this->render($response, 'definitions/edit.twig')->withStatus(400);
 		}
 
@@ -160,7 +160,7 @@ class DefinitionController extends AbstractController
 			if (in_array($e->getCode(), ['23000', '28000']))
 				$status = 409;
 
-			$this->flashError($e->getMessage());
+			$this->flashErrorNow($e->getMessage());
 			return $this->render(
 				$response,
 				'definitions/edit.twig',
