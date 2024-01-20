@@ -25,9 +25,9 @@
 			</a>
 			{% block navbar %}
 				<span>
-					{# {% for definition in container.get('repository').get('definition').findAll() %}
-						<a href="{{ url_for('reviewables', { 'def': definition.id }) }}">{{ definition.name }}</a>
-					{% endfor %} #}
+					{% for definition in container.get('repository').get('definition').findAll() %}
+						<a href="#">{{ definition.name }}</a>
+					{% endfor %}
 					<a href="{{ url_for('definitions') }}">Definitions</a>
 					<a href="{{ url_for('grading') }}">Grading</a>
 				</span>

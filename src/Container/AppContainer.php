@@ -1,9 +1,12 @@
 <?php
-namespace Rdb;
+namespace Rdb\Container;
 
-use DI\Container;
+
+use Slim\App;
 use Slim\Views\Twig;
 use Slim\Flash\Messages;
+
+use DI\Container;
 
 use Rdb\Db\SQLiteDatabase;
 
@@ -16,19 +19,21 @@ use Rdb\Controller\DefinitionController;
 
 use Rdb\Middleware\HtmxOnlyMiddleware;
 
-class ContainerFactory
+class AppContainer
 {
-	static public function get(): Container
+	static public function setup(App $app)
 	{
-		$container = new Container();
+		$container = $app->getContainer();
+
+
+		$container->set('app', $app);
 
 		self::setFlash($container);
 		self::setDb($container);
 		self::setRepository($container);
 		self::setView($container);
 		self::setController($container);
-
-		return $container;
+		$container->set(HtmxOnlyMiddleware::class, fn() => new HtmxOnlyMiddleware($app));
 	}
 
 	static protected function setFlash(Container $container): void
@@ -40,7 +45,7 @@ class ContainerFactory
 	{
 		$container->set(
 			'db',
-			fn() => new SQLiteDatabase(implode(DIRECTORY_SEPARATOR, [dirname(__DIR__), 'data', 'database.sqlite']))
+			fn() => new SQLiteDatabase(implode(DIRECTORY_SEPARATOR, [dirname(dirname(__DIR__)), 'data', 'database.sqlite']))
 		);
 	}
 
@@ -67,7 +72,7 @@ class ContainerFactory
 			function () use ($container)
 			{
 				$twig = Twig::create(
-					dirname(__DIR__) . DIRECTORY_SEPARATOR . 'view',
+					dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'view',
 					[
 						'cache' => false,
 						'debug' => true
