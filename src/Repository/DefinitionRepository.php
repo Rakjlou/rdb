@@ -125,13 +125,7 @@ class DefinitionRepository
 		$stmt->execute();
 
 		while ($row = $stmt->fetch())
-		{
-			$result[] = $this->hydrateFields(new Definition(
-				id: $row['id'],
-				name: $row['name'],
-				scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
-			));
-		}
+			$result[] = $this->createFromDbRow($row);
 		return $result;
 	}
 
@@ -144,15 +138,30 @@ class DefinitionRepository
 		$stmt->execute();
 
 		if ($row = $stmt->fetch())
-		{
-			return $this->hydrateFields(new Definition(
-				id: $row['id'],
-				name: $row['name'],
-				scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
-			));
-		}
-
+			return $this->createFromDbRow($row);
 		return null;
+	}
+
+	public function findByName(string $name): ?Definition
+	{
+		$pdo = $this->db->getPdo();
+		$table = self::DEFINITION_TABLE;
+		$stmt = $pdo->prepare("SELECT * FROM `$table` WHERE name = :name");
+		$stmt->bindValue(':name', $name, PDO::PARAM_STR);
+		$stmt->execute();
+
+		if ($row = $stmt->fetch())
+			return $this->createFromDbRow($row);
+		return null;
+	}
+
+	public function createFromDbRow(array $row): Definition
+	{
+		return $this->hydrateFields(new Definition(
+			id: $row['id'],
+			name: $row['name'],
+			scale: $this->container->get('repository')->get('grading')->findById($row['scale_id'])
+		));
 	}
 
 	public function hydrateFields(Definition $definition): Definition
